@@ -1,0 +1,6 @@
+{
+  "name": "The Alchemist Lab",
+  "description": "32-bit pixel art retro sports science dashboard and training alchemy studio for running coaches and athletes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
