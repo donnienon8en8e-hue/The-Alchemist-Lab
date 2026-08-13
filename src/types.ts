@@ -1,9 +1,14 @@
 export type TabType = 'crucible' | 'roster' | 'calculator' | 'grimoire' | 'coach_ai';
 
+export type AthleteClass = 'Strider (Road Racing)' | 'Trail Nomad (Trail & Elevation)' | 'Tri-Alchemist (Multisport / Triathlon)' | 'Ultrarunner (Ultra Endurance)';
+export type AthleteStatus = 'Fresh (Optimal HRV / High Load)' | 'Fatigued (Moderate HRV / Caution)' | 'Recovering (Low HRV / Restrict High Intensity)';
+
 export interface Athlete {
   id: string;
   name: string;
   title: string;
+  athleteClass?: AthleteClass;
+  athleteStatus?: AthleteStatus;
   level: number;
   exp: number;
   maxExp: number;
