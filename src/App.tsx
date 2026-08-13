@@ -8,6 +8,7 @@ import { FormulaCalculator } from './components/FormulaCalculator';
 import { GrandAlchemistAI } from './components/GrandAlchemistAI';
 import { GrimoireLogbook } from './components/GrimoireLogbook';
 import { CelestialLogo } from './components/CelestialLogo';
+import { AuthProvider } from './context/AuthContext';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('crucible');
@@ -82,78 +83,81 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0E151B] text-[#E0E8F0] relative flex flex-col font-tech dither-bg">
-      {/* Optional CRT Scanlines Effect */}
-      {scanlinesOn && <div className="fixed inset-0 scanlines z-30 pointer-events-none opacity-40" />}
+    <AuthProvider>
+      <div className="min-h-screen bg-[#0E151B] text-[#E0E8F0] relative flex flex-col font-tech dither-bg">
+        {/* Optional CRT Scanlines Effect */}
+        {scanlinesOn && <div className="fixed inset-0 scanlines z-30 pointer-events-none opacity-40" />}
 
-      {/* Alchemical Top Navigation Header */}
-      <AlchemicalHeader
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        selectedAthleteName={selectedAthlete?.name}
-      />
+        {/* Alchemical Top Navigation Header */}
+        <AlchemicalHeader
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          selectedAthleteName={selectedAthlete?.name}
+        />
 
-      {/* Main Body Canvas */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 z-10 space-y-6">
-        {activeTab === 'crucible' && (
-          <CrucibleCrafting
-            athletes={athletes}
-            selectedAthleteId={selectedAthleteId}
-            onSelectAthlete={setSelectedAthleteId}
-            onSaveBrewedWorkout={handleSaveBrewedWorkout}
-          />
-        )}
+        {/* Main Body Canvas */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 z-10 space-y-6">
+          {activeTab === 'crucible' && (
+            <CrucibleCrafting
+              athletes={athletes}
+              selectedAthleteId={selectedAthleteId}
+              onSelectAthlete={setSelectedAthleteId}
+              onSaveBrewedWorkout={handleSaveBrewedWorkout}
+            />
+          )}
 
-        {activeTab === 'roster' && (
-          <AthletesRoster
-            athletes={athletes}
-            selectedAthleteId={selectedAthleteId}
-            onSelectAthlete={setSelectedAthleteId}
-            onAddAthlete={handleAddAthlete}
-            onUpdateAthlete={handleUpdateAthlete}
-          />
-        )}
+          {activeTab === 'roster' && (
+            <AthletesRoster
+              athletes={athletes}
+              selectedAthleteId={selectedAthleteId}
+              onSelectAthlete={setSelectedAthleteId}
+              onAddAthlete={handleAddAthlete}
+              onUpdateAthlete={handleUpdateAthlete}
+            />
+          )}
 
-        {activeTab === 'calculator' && <FormulaCalculator />}
+          {activeTab === 'calculator' && <FormulaCalculator />}
 
-        {activeTab === 'coach_ai' && (
-          <GrandAlchemistAI
-            athletes={athletes}
-            selectedAthleteId={selectedAthleteId}
-          />
-        )}
+          {activeTab === 'coach_ai' && (
+            <GrandAlchemistAI
+              athletes={athletes}
+              selectedAthleteId={selectedAthleteId}
+            />
+          )}
 
-        {activeTab === 'grimoire' && (
-          <GrimoireLogbook
-            athletes={athletes}
-            brewedWorkouts={brewedWorkouts}
-            loggedWorkouts={loggedWorkouts}
-            onAddLoggedWorkout={handleAddLoggedWorkout}
-          />
-        )}
-      </main>
+          {activeTab === 'grimoire' && (
+            <GrimoireLogbook
+              athletes={athletes}
+              brewedWorkouts={brewedWorkouts}
+              loggedWorkouts={loggedWorkouts}
+              onAddLoggedWorkout={handleAddLoggedWorkout}
+            />
+          )}
+        </main>
 
-      {/* Retro Pixel Footer */}
-      <footer className="bg-[#101923] border-t-4 border-[#070B0E] py-4 px-4 mt-auto relative z-20">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-[#8A9EB2] font-tech">
-          <div className="flex items-center gap-2">
-            <CelestialLogo size={24} />
-            <span className="font-silkscreen text-[#C9973E]">THE ALCHEMIST LAB © 2026</span>
-            <span className="hidden sm:inline text-[#2A3A4A]">|</span>
-            <span className="hidden sm:inline">32-Bit Sports Science Transmutation Engine</span>
+        {/* Retro Pixel Footer */}
+        <footer className="bg-[#101923] border-t-4 border-[#070B0E] py-4 px-4 mt-auto relative z-20">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-[#8A9EB2] font-tech">
+            <div className="flex items-center gap-2">
+              <CelestialLogo size={24} />
+              <span className="font-silkscreen text-[#C9973E]">THE ALCHEMIST LAB © 2026</span>
+              <span className="hidden sm:inline text-[#2A3A4A]">|</span>
+              <span className="hidden sm:inline">32-Bit Sports Science Transmutation Engine</span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setScanlinesOn(!scanlinesOn)}
+                className="hover:text-[#38D9C4] underline"
+              >
+                CRT SCANLINES: {scanlinesOn ? 'ON' : 'OFF'}
+              </button>
+              <span>PRESS START TO TRANSMUTE</span>
+            </div>
           </div>
-
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setScanlinesOn(!scanlinesOn)}
-              className="hover:text-[#38D9C4] underline"
-            >
-              CRT SCANLINES: {scanlinesOn ? 'ON' : 'OFF'}
-            </button>
-            <span>PRESS START TO TRANSMUTE</span>
-          </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </AuthProvider>
   );
 }
+

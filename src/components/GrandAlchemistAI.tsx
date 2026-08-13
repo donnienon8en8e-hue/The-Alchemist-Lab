@@ -16,18 +16,34 @@ export const GrandAlchemistAI: React.FC<GrandAlchemistAIProps> = ({
   const [userQuery, setUserQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState<string>(
-    `🔨 [THE TRANSMUTATION FORGE - SYSTEM REPORT]\n• Target Athlete: ${
-      athletes[0]?.name || 'Athlete'
-    } (VDOT ${athletes[0]?.vdot || 50})\n• Forging Blueprint: Initial Calibration & Guidance\n• Combined Catalysts: Mithril Aerobic Dust, Lactate Crucible Buffer, Aether Speed Elixir\n\n📊 FORGED METRICS:\n- Estimated Distance: 10.0 KM\n- Estimated Duration: 48 MINS\n- Heat/Strain Level: Safe\n\n🔮 ALCHEMICAL ADVICE (Master AI Insights):\nGreetings, Alchemist Coach! I am Master AI, lead sports science alchemist within THE ALCHEMIST LAB. I operate The Transmutation Forge to forge RPG-style training plans based on VDOT, ACWR, and lactate threshold kinetics.\n\nShall we strike the anvil and export this to your Smartwatch Matrix? [FORGE WORKOUT]`
+    `🔨 [THE TRANSMUTATION FORGE - SYSTEM REPORT]
+• Target Athlete: ${
+      athletes[0]?.name || 'Base Runner'
+    } (Base Runner - Level ${athletes[0]?.level || 5} / VDOT ${athletes[0]?.vdot || 28.5})
+• Forging Blueprint: Aerobic Base & Tempo Threshold Calibration
+• Combined Catalysts: 🟢 [ITEM] EASY DUST, 🟡 [ITEM] TEMPO POTION
+
+📊 FORGED METRICS:
+- Total Distance: 11.3 KM
+- Estimated Duration: 72 MINS
+- 🔥 Training Stress Score (TSS): 179 Points
+- ⚡ VO2 Max Adaptation Gain: +0.32%
+- ⏳ Recovery Required (Hours): 34 Hours
+- ⚠️ Injury Risk Level (ACWR): Optimal (ACWR 1.15)
+
+🔮 ALCHEMICAL ADVICE (Master AI Insights):
+Welcome to The Transmutation Forge! I am Master AI, lead sports science coach and alchemist within THE ALCHEMIST LAB. The system transmutates workout blueprints derived from VDOT kinetics, ACWR workload management, and alchemy reagents to elevate your athletic capacity safely and effectively!
+
+Shall we strike the anvil and export this to your Smartwatch Matrix? [FORGE WORKOUT]`
   );
 
   const activeAthlete = athletes.find((a) => a.id === selectedAthleteForAI) || athletes[0];
 
   const presetQueries = [
-    '🔨 Forge a 4-week marathon peak periodization plan using Mithril Aerobic Dust and Lactate Crucible Buffer.',
-    '⚠️ My athlete has a Heat/Strain Level spike (ACWR > 1.45). How do I safely manage the Forging Stress Index?',
-    '🧪 Transmutate an Aether Speed Elixir workout recipe to boost VO2 Max for a 5K race.',
-    '🔮 Explain the sports science of Lactate Crucible Buffer clearance and T-Pace threshold runs.',
+    '🔨 Forge a training blueprint using 🟢 [ITEM] EASY DUST and 🟡 [ITEM] TEMPO POTION.',
+    '⚠️ If 🔥 Training Stress Score (TSS) gets too high, how much 🌙 [ITEM] RECOVERY DEW should I add?',
+    '🧪 Forge a 5K VO2 Max speedwork blueprint using 🔴 [ITEM] INTERVAL ELIXIR.',
+    '🔮 Explain the sports science kinetics of ⚡ [ITEM] CADENCE CRYSTAL for 180 BPM efficiency.',
   ];
 
   const handleAskAI = async (queryToUse?: string) => {

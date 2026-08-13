@@ -71,7 +71,7 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
       <div className="pixel-panel p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <span className="font-silkscreen text-xs text-[#C9973E] uppercase tracking-wider">
-            SECTION V: ALCHEMICAL GRIMOIRE LOGBOOK
+            SECTION V: ALCHEMY CODEX LOGBOOK
           </span>
           <h2 className="font-pixel text-lg text-[#E0E8F0] mt-1 flex items-center gap-2">
             <PixelScrollIcon size={24} color="#EBBF68" />
