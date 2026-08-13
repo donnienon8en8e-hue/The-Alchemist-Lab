@@ -16,16 +16,18 @@ export const GrandAlchemistAI: React.FC<GrandAlchemistAIProps> = ({
   const [userQuery, setUserQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState<string>(
-    `Greetings, Alchemist Coach! I am Master Aurelius, Grand Alchemist of Sports Science.\n\nSelect an athlete profile and consult me regarding periodization, lactate threshold transmutations, ACWR injury prevention, or peak race preparations!`
+    `🔨 [THE TRANSMUTATION FORGE - SYSTEM REPORT]\n• Target Athlete: ${
+      athletes[0]?.name || 'Athlete'
+    } (VDOT ${athletes[0]?.vdot || 50})\n• Forging Blueprint: Initial Calibration & Guidance\n• Combined Catalysts: Mithril Aerobic Dust, Lactate Crucible Buffer, Aether Speed Elixir\n\n📊 FORGED METRICS:\n- Estimated Distance: 10.0 KM\n- Estimated Duration: 48 MINS\n- Heat/Strain Level: Safe\n\n🔮 ALCHEMICAL ADVICE (Master AI Insights):\nGreetings, Alchemist Coach! I am Master AI, lead sports science alchemist within THE ALCHEMIST LAB. I operate The Transmutation Forge to forge RPG-style training plans based on VDOT, ACWR, and lactate threshold kinetics.\n\nShall we strike the anvil and export this to your Smartwatch Matrix? [FORGE WORKOUT]`
   );
 
   const activeAthlete = athletes.find((a) => a.id === selectedAthleteForAI) || athletes[0];
 
   const presetQueries = [
-    '📜 Draft a 4-week marathon peak periodization plan for this athlete.',
-    '⚠️ My athlete has an ACWR spike above 1.45. How do I safely lower load without fitness loss?',
-    '🧪 What is the exact alchemical interval recipe to boost VO2 Max for a 5K race?',
-    '🔮 Explain the sports science of lactate threshold clearance and how to structure T-Pace workouts.',
+    '🔨 Forge a 4-week marathon peak periodization plan using Mithril Aerobic Dust and Lactate Crucible Buffer.',
+    '⚠️ My athlete has a Heat/Strain Level spike (ACWR > 1.45). How do I safely manage the Forging Stress Index?',
+    '🧪 Transmutate an Aether Speed Elixir workout recipe to boost VO2 Max for a 5K race.',
+    '🔮 Explain the sports science of Lactate Crucible Buffer clearance and T-Pace threshold runs.',
   ];
 
   const handleAskAI = async (queryToUse?: string) => {
@@ -77,16 +79,16 @@ export const GrandAlchemistAI: React.FC<GrandAlchemistAIProps> = ({
       <div className="pixel-panel p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <span className="font-silkscreen text-xs text-[#C9973E] uppercase tracking-wider">
-            SECTION IV: GRAND ALCHEMIST SPORTS SCIENCE AI
+            SECTION IV: THE TRANSMUTATION FORGE AI ENGINE
           </span>
           <h2 className="font-pixel text-lg text-[#E0E8F0] mt-1 flex items-center gap-2">
             <PixelWizardIcon size={24} color="#38D9C4" />
-            MASTER AURELIUS — GEMINI SPORTS SCIENCE AI
+            MASTER AI — LEAD SPORTS SCIENCE COACH
           </h2>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-tech text-xs text-[#8A9EB2]">ATHLETE CONTEXT:</span>
+          <span className="font-tech text-xs text-[#8A9EB2]">TARGET ATHLETE:</span>
           <select
             value={selectedAthleteForAI}
             onChange={(e) => setSelectedAthleteForAI(e.target.value)}
@@ -113,8 +115,8 @@ export const GrandAlchemistAI: React.FC<GrandAlchemistAIProps> = ({
               </div>
 
               <div>
-                <h3 className="font-pixel text-sm text-[#EBBF68]">MASTER AURELIUS</h3>
-                <span className="font-tech text-xs text-[#38D9C4]">Grand Sports Science Alchemist & Periodization Mystic</span>
+                <h3 className="font-pixel text-sm text-[#EBBF68]">MASTER AI</h3>
+                <span className="font-tech text-xs text-[#38D9C4]">Lead Sports Science Alchemist &amp; Transmutation Forge Coach</span>
               </div>
             </div>
 

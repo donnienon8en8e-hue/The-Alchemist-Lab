@@ -49,7 +49,7 @@ export const AlchemicalHeader: React.FC<AlchemicalHeaderProps> = ({
   };
 
   const navItems: { id: TabType; label: string; icon: React.ReactNode; color: string }[] = [
-    { id: 'crucible', label: 'Crucible Lab', icon: <PixelFlaskIcon size={18} color={activeTab === 'crucible' ? '#0E151B' : '#38D9C4'} />, color: 'teal' },
+    { id: 'crucible', label: 'Transmutation Forge', icon: <PixelFlaskIcon size={18} color={activeTab === 'crucible' ? '#0E151B' : '#38D9C4'} />, color: 'teal' },
     { id: 'roster', label: 'Athletes Guild', icon: <PixelShieldIcon size={18} color={activeTab === 'roster' ? '#0E151B' : '#C9973E'} />, color: 'amber' },
     { id: 'calculator', label: 'Formula Matrix', icon: <PixelBarChartIcon size={18} color={activeTab === 'calculator' ? '#0E151B' : '#E2654B'} />, color: 'red' },
     { id: 'grimoire', label: 'Grimoire Log', icon: <PixelScrollIcon size={18} color={activeTab === 'grimoire' ? '#0E151B' : '#EBBF68'} />, color: 'amber' },

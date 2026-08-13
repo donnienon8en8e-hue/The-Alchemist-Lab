@@ -1,0 +1,52 @@
+{
+  "entities": {
+    "athletes": {
+      "title": "Athletes",
+      "description": "Athlete profiles for training management",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "level": { "type": "number" },
+        "exp": { "type": "number" },
+        "maxExp": { "type": "number" },
+        "staminaHp": { "type": "number" },
+        "staminaMaxHp": { "type": "number" },
+        "manaMp": { "type": "number" },
+        "vo2Max": { "type": "number" },
+        "vdot": { "type": "number" },
+        "acwr": { "type": "number" },
+        "acute7dKm": { "type": "number" },
+        "chronic28dKm": { "type": "number" },
+        "avgCadence": { "type": "number" },
+        "maxHr": { "type": "number" },
+        "restingHr": { "type": "number" },
+        "primaryDistance": { "type": "string" },
+        "avatarIcon": { "type": "string" },
+        "themeColor": { "type": "string" },
+        "email": { "type": "string" },
+        "photoUrl": { "type": "string" }
+      },
+      "required": ["name", "level", "exp", "vdot"]
+    },
+    "loggedWorkouts": {
+      "title": "Logged Workouts",
+      "description": "Training runs logged by athletes",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "athleteId": { "type": "string" },
+        "athleteName": { "type": "string" },
+        "workoutTitle": { "type": "string" },
+        "distanceKm": { "type": "number" },
+        "timeMinutes": { "type": "number" },
+        "avgPace": { "type": "string" },
+        "avgHr": { "type": "number" },
+        "rpeMana": { "type": "number" },
+        "potionUsed": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["date", "athleteId", "workoutTitle", "distanceKm"]
+    }
+  }
+}

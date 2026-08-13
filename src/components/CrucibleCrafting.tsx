@@ -169,11 +169,11 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
       <div className="pixel-panel p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#16222F]">
         <div>
           <span className="font-silkscreen text-xs text-[#C9973E] uppercase tracking-wider">
-            SECTION I: THE TRANSMUTATION CRUCIBLE
+            SECTION I: THE TRANSMUTATION FORGE
           </span>
           <h2 className="font-pixel text-lg text-[#E0E8F0] mt-1 flex items-center gap-2">
             <PixelFlaskIcon size={24} color="#38D9C4" />
-            WORKOUT ALCHEMY STUDIO
+            WORKOUT ALCHEMY FORGE
           </h2>
         </div>
 
