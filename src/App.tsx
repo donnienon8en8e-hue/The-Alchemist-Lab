@@ -82,6 +82,27 @@ export default function App() {
     }
   };
 
+  const handleResetLogbook = () => {
+    setLoggedWorkouts(INITIAL_LOGGED_WORKOUTS);
+    setBrewedWorkouts(INITIAL_BREWED_WORKOUTS);
+  };
+
+  const handleClearAllLogs = () => {
+    setLoggedWorkouts([]);
+  };
+
+  const handleClearAllBrewed = () => {
+    setBrewedWorkouts([]);
+  };
+
+  const handleDeleteLoggedWorkout = (id: string) => {
+    setLoggedWorkouts((prev) => prev.filter((l) => l.id !== id));
+  };
+
+  const handleDeleteBrewedWorkout = (id: string) => {
+    setBrewedWorkouts((prev) => prev.filter((b) => b.id !== id));
+  };
+
   return (
     <AuthProvider>
       <div className="min-h-screen bg-[#0E151B] text-[#E0E8F0] relative flex flex-col font-tech dither-bg">
@@ -131,6 +152,11 @@ export default function App() {
               brewedWorkouts={brewedWorkouts}
               loggedWorkouts={loggedWorkouts}
               onAddLoggedWorkout={handleAddLoggedWorkout}
+              onResetLogbook={handleResetLogbook}
+              onClearAllLogs={handleClearAllLogs}
+              onClearAllBrewed={handleClearAllBrewed}
+              onDeleteLoggedWorkout={handleDeleteLoggedWorkout}
+              onDeleteBrewedWorkout={handleDeleteBrewedWorkout}
             />
           )}
         </main>

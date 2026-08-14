@@ -7,11 +7,16 @@ import { PixelBarChartIcon, PixelCompassIcon, PixelFlameIcon } from './PixelIcon
 export const FormulaCalculator: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'vcr' | 'vdot'>('vcr');
 
-  // Calculator 1: VDOT & Pacing Transmuter
-  const [raceDistMeters, setRaceDistMeters] = useState(5000); // 5K
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(20);
-  const [seconds, setSeconds] = useState(0);
+  // Calculator 1: VDOT & Pacing Transmuter Defaults
+  const DEFAULT_RACE_DIST = 5000;
+  const DEFAULT_HOURS = 0;
+  const DEFAULT_MINUTES = 20;
+  const DEFAULT_SECONDS = 0;
+
+  const [raceDistMeters, setRaceDistMeters] = useState(DEFAULT_RACE_DIST); // 5K
+  const [hours, setHours] = useState(DEFAULT_HOURS);
+  const [minutes, setMinutes] = useState(DEFAULT_MINUTES);
+  const [seconds, setSeconds] = useState(DEFAULT_SECONDS);
 
   const totalRaceSeconds = hours * 3600 + minutes * 60 + seconds;
   const calculatedVdot = calculateVDOT(raceDistMeters, totalRaceSeconds);
@@ -26,15 +31,47 @@ export const FormulaCalculator: React.FC = () => {
     { name: 'Marathon', meters: 42195 },
   ];
 
-  // Calculator 3: ACWR Workload Fatigue
-  const [acute7d, setAcute7d] = useState(65);
-  const [chronic28d, setChronic28d] = useState(220);
+  // Calculator 3: ACWR Workload Fatigue Defaults
+  const DEFAULT_ACUTE_7D = 65;
+  const DEFAULT_CHRONIC_28D = 220;
+  const [acute7d, setAcute7d] = useState(DEFAULT_ACUTE_7D);
+  const [chronic28d, setChronic28d] = useState(DEFAULT_CHRONIC_28D);
   const acwrResult = calculateACWR(acute7d, chronic28d);
 
-  // Calculator 4: Heart Rate Karvonen Zones
-  const [maxHr, setMaxHr] = useState(190);
-  const [restingHr, setRestingHr] = useState(50);
+  // Calculator 4: Heart Rate Karvonen Zones Defaults
+  const DEFAULT_MAX_HR = 190;
+  const DEFAULT_RESTING_HR = 50;
+  const [maxHr, setMaxHr] = useState(DEFAULT_MAX_HR);
+  const [restingHr, setRestingHr] = useState(DEFAULT_RESTING_HR);
   const hrr = maxHr - restingHr;
+
+  // Reset Handlers
+  const resetVdotCalculator = () => {
+    playButtonClickSound();
+    setRaceDistMeters(DEFAULT_RACE_DIST);
+    setHours(DEFAULT_HOURS);
+    setMinutes(DEFAULT_MINUTES);
+    setSeconds(DEFAULT_SECONDS);
+  };
+
+  const resetAcwrCalculator = () => {
+    playButtonClickSound();
+    setAcute7d(DEFAULT_ACUTE_7D);
+    setChronic28d(DEFAULT_CHRONIC_28D);
+  };
+
+  const resetHrCalculator = () => {
+    playButtonClickSound();
+    setMaxHr(DEFAULT_MAX_HR);
+    setRestingHr(DEFAULT_RESTING_HR);
+  };
+
+  const resetCalculator = () => {
+    playButtonClickSound();
+    resetVdotCalculator();
+    resetAcwrCalculator();
+    resetHrCalculator();
+  };
 
   const hrZones = [
     { zone: 'Zone 1 (Recovery)', pct: '50-60%', bpm: `${Math.round(restingHr + hrr * 0.50)} - ${Math.round(restingHr + hrr * 0.60)} BPM` },
@@ -58,8 +95,18 @@ export const FormulaCalculator: React.FC = () => {
           </h2>
         </div>
 
-        {/* Sub-tab Navigation Buttons */}
-        <div className="flex gap-2 font-tech text-xs">
+        {/* Sub-tab Navigation Buttons & Global Reset */}
+        <div className="flex flex-wrap items-center gap-2 font-tech text-xs">
+          <button
+            type="button"
+            onClick={resetCalculator}
+            className="pixel-btn text-xs px-3 py-2 text-[#E2654B] border-[#E2654B]/50 hover:bg-[#E2654B]/20 font-silkscreen flex items-center gap-1.5"
+            title="Reset all calculators to standard baseline metrics"
+          >
+            <span>🔄</span>
+            <span>RESET CALCULATOR</span>
+          </button>
+
           <button
             onClick={() => {
               playButtonClickSound();
@@ -98,9 +145,19 @@ export const FormulaCalculator: React.FC = () => {
             <div className="pixel-panel p-5">
               <h3 className="font-silkscreen text-sm text-[#C9973E] mb-3 border-b border-[#2A3A4A] pb-2 flex justify-between items-center">
                 <span>🔮 VDOT SCORE &amp; PACING CALCULATOR</span>
-                <span className="font-pixel text-xs text-[#38D9C4]">
-                  VDOT: {calculatedVdot || '--'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-pixel text-xs text-[#38D9C4]">
+                    VDOT: {calculatedVdot || '--'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={resetVdotCalculator}
+                    className="pixel-btn text-[10px] px-2 py-0.5 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen"
+                    title="Reset VDOT & race inputs to default"
+                  >
+                    RESET
+                  </button>
+                </div>
               </h3>
 
               {/* Race Distance & Time Input */}
@@ -212,9 +269,19 @@ export const FormulaCalculator: React.FC = () => {
             <div className="pixel-panel p-5">
               <h3 className="font-silkscreen text-sm text-[#C9973E] mb-3 border-b border-[#2A3A4A] pb-2 flex justify-between items-center">
                 <span>⚖️ ACWR WORKLOAD RATIO CALCULATOR</span>
-                <span className="font-pixel text-xs" style={{ color: acwrResult.color }}>
-                  {acwrResult.ratio}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-pixel text-xs" style={{ color: acwrResult.color }}>
+                    {acwrResult.ratio}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={resetAcwrCalculator}
+                    className="pixel-btn text-[10px] px-2 py-0.5 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen"
+                    title="Reset ACWR parameters"
+                  >
+                    RESET
+                  </button>
+                </div>
               </h3>
 
               <div className="space-y-3 font-tech text-xs">
@@ -249,8 +316,16 @@ export const FormulaCalculator: React.FC = () => {
 
             {/* Karvonen HR Reserve Calculator */}
             <div className="pixel-panel p-5">
-              <h3 className="font-silkscreen text-sm text-[#C9973E] mb-3 border-b border-[#2A3A4A] pb-2">
-                ❤️ KARVONEN HEART RATE ZONE MATRIX
+              <h3 className="font-silkscreen text-sm text-[#C9973E] mb-3 border-b border-[#2A3A4A] pb-2 flex justify-between items-center">
+                <span>❤️ KARVONEN HEART RATE ZONE MATRIX</span>
+                <button
+                  type="button"
+                  onClick={resetHrCalculator}
+                  className="pixel-btn text-[10px] px-2 py-0.5 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen"
+                  title="Reset HR parameters to baseline"
+                >
+                  RESET
+                </button>
               </h3>
 
               <div className="grid grid-cols-2 gap-3 font-tech text-xs mb-4">

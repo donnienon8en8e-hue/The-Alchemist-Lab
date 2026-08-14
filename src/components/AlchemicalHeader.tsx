@@ -106,7 +106,7 @@ export const AlchemicalHeader: React.FC<AlchemicalHeaderProps> = ({
     { id: 'crucible', label: 'Transmutation Forge', icon: <PixelFlaskIcon size={18} color={activeTab === 'crucible' ? '#0E151B' : '#38D9C4'} />, color: 'teal' },
     { id: 'roster', label: 'Athletes Guild', icon: <PixelShieldIcon size={18} color={activeTab === 'roster' ? '#0E151B' : '#C9973E'} />, color: 'amber' },
     { id: 'calculator', label: 'Formula Matrix', icon: <PixelBarChartIcon size={18} color={activeTab === 'calculator' ? '#0E151B' : '#E2654B'} />, color: 'red' },
-    { id: 'grimoire', label: 'Alchemy Codex', icon: <PixelScrollIcon size={18} color={activeTab === 'grimoire' ? '#0E151B' : '#EBBF68'} />, color: 'amber' },
+    { id: 'grimoire', label: 'Alchemist Codex', icon: <PixelScrollIcon size={18} color={activeTab === 'grimoire' ? '#0E151B' : '#EBBF68'} />, color: 'amber' },
     { id: 'coach_ai', label: 'Master AI', icon: <PixelWizardIcon size={18} color={activeTab === 'coach_ai' ? '#0E151B' : '#38D9C4'} />, color: 'teal' },
   ];
 

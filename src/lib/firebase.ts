@@ -14,16 +14,22 @@ const app = initializeApp({
 
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
-// Request Google profile & email
+// Request Google profile, email, and Gmail readonly access for workout imports
 googleProvider.addScope('profile');
 googleProvider.addScope('email');
+googleProvider.addScope('https://www.googleapis.com/auth/gmail.readonly');
 
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId || '(default)');
+export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId || '(default)');
 
-export const signInWithGoogle = async () => {
+export const signInWithGoogle = async (): Promise<{ user: User; accessToken: string | null }> => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const accessToken = credential?.accessToken || null;
+    if (accessToken) {
+      localStorage.setItem('alchemist_google_oauth_token', accessToken);
+    }
+    return { user: result.user, accessToken };
   } catch (error: any) {
     console.error('Error signing in with Google:', error);
     throw error;

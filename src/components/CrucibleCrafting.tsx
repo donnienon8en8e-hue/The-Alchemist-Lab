@@ -49,6 +49,35 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
     setQuantities((prev) => ({ ...prev, [id]: num }));
   };
 
+  const handleResetAll = () => {
+    playButtonClickSound();
+    setQuantities({
+      easy_dust: 0,
+      tempo_potion: 0,
+      interval_elixir: 0,
+      long_run_tonic: 0,
+      cadence_crystal: 0,
+      recovery_dew: 0,
+    });
+    setCustomTitle('');
+    setLatestElixir(null);
+    setIsBrewing(false);
+  };
+
+  const applyPresetFormula = (preset: { title: string; quantities: Record<string, number> }) => {
+    playButtonClickSound();
+    setQuantities({
+      easy_dust: preset.quantities.easy_dust || 0,
+      tempo_potion: preset.quantities.tempo_potion || 0,
+      interval_elixir: preset.quantities.interval_elixir || 0,
+      long_run_tonic: preset.quantities.long_run_tonic || 0,
+      cadence_crystal: preset.quantities.cadence_crystal || 0,
+      recovery_dew: preset.quantities.recovery_dew || 0,
+    });
+    setCustomTitle(preset.title);
+    setLatestElixir(null);
+  };
+
   // Calculate live alchemical metrics
   let totalStressTSS = 0;
   let predictedVo2MaxBoost = 0;
@@ -215,7 +244,87 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
               </option>
             ))}
           </select>
+          {athletes.length > 0 && selectedAthleteId !== athletes[0].id && (
+            <button
+              type="button"
+              onClick={() => {
+                playButtonClickSound();
+                onSelectAthlete(athletes[0].id);
+              }}
+              className="pixel-btn text-[10px] px-2 py-1 text-[#8A9EB2] hover:text-[#38D9C4] font-silkscreen"
+              title="Reset to default athlete"
+            >
+              RESET
+            </button>
+          )}
         </div>
+      </div>
+
+      {/* Quick Presets and Reset Bar */}
+      <div className="pixel-panel p-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="font-silkscreen text-[11px] text-[#C9973E] flex items-center gap-1.5">
+            <span>⚡</span>
+            <span>QUICK FORMULAS:</span>
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => applyPresetFormula({
+                title: 'Aerobic Base Foundation 8K',
+                quantities: { easy_dust: 8, recovery_dew: 1 }
+              })}
+              className="pixel-btn text-[10px] px-2 py-1 text-[#38D9C4] hover:bg-[#38D9C4]/20 font-silkscreen"
+              title="8 KM Aerobic Easy run + Recovery dew"
+            >
+              🌱 8K BASE
+            </button>
+            <button
+              type="button"
+              onClick={() => applyPresetFormula({
+                title: 'Threshold Tempo Crucible (20M)',
+                quantities: { easy_dust: 3, tempo_potion: 20, cadence_crystal: 2 }
+              })}
+              className="pixel-btn text-[10px] px-2 py-1 text-[#EBBF68] hover:bg-[#EBBF68]/20 font-silkscreen"
+              title="Warmup + 20 min Tempo + Cadence drills"
+            >
+              ⚡ 20M TEMPO
+            </button>
+            <button
+              type="button"
+              onClick={() => applyPresetFormula({
+                title: 'VO2max Interval Transmutation (5x)',
+                quantities: { easy_dust: 3, interval_elixir: 5, cadence_crystal: 2 }
+              })}
+              className="pixel-btn text-[10px] px-2 py-1 text-[#E2654B] hover:bg-[#E2654B]/20 font-silkscreen"
+              title="Warmup + 5x VO2max intervals"
+            >
+              🔥 5x VO2 INTERVALS
+            </button>
+            <button
+              type="button"
+              onClick={() => applyPresetFormula({
+                title: 'Endurance Long Run Tonic 16K',
+                quantities: { long_run_tonic: 16, easy_dust: 2, recovery_dew: 1 }
+              })}
+              className="pixel-btn text-[10px] px-2 py-1 text-[#38D9C4] hover:bg-[#38D9C4]/20 font-silkscreen"
+              title="16 KM Long Run + recovery"
+            >
+              🏔️ 16K LONG RUN
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleResetAll}
+          disabled={totalItemsCount === 0 && !customTitle}
+          className="pixel-btn text-xs px-3 py-1 text-[#E2654B] border-[#E2654B]/50 hover:bg-[#E2654B]/20 font-silkscreen disabled:opacity-30 flex items-center gap-1.5"
+          title="Reset all reagents and start fresh"
+        >
+          <span>🔄</span>
+          <span>RESET ALL (0)</span>
+        </button>
       </div>
 
       {/* Main Grid: Left = Ingredient Workbench, Right = Live Alchemical Meter */}
@@ -226,17 +335,7 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
             <h3 className="font-silkscreen text-sm text-[#C9973E] mb-3 border-b border-[#2A3A4A] pb-2 flex justify-between items-center">
               <span>🧪 REAGENT INVENTORY & DOSAGE</span>
               <button
-                onClick={() => {
-                  playButtonClickSound();
-                  setQuantities({
-                    easy_dust: 0,
-                    tempo_potion: 0,
-                    interval_elixir: 0,
-                    long_run_tonic: 0,
-                    cadence_crystal: 0,
-                    recovery_dew: 0,
-                  });
-                }}
+                onClick={handleResetAll}
                 className="pixel-btn text-[10px] px-2.5 py-0.5 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen"
                 title="Reset all quantities to 0"
               >
@@ -310,6 +409,19 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
                         >
                           +5
                         </button>
+                        {qty > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              playButtonClickSound();
+                              setQuantities((prev) => ({ ...prev, [ing.id]: 0 }));
+                            }}
+                            className="pixel-btn text-[10px] px-1.5 py-0.5 text-[#E2654B] hover:border-[#E2654B]"
+                            title="Reset this reagent to 0"
+                          >
+                            CLR
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -334,18 +446,7 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    playButtonClickSound();
-                    setQuantities({
-                      easy_dust: 0,
-                      tempo_potion: 0,
-                      interval_elixir: 0,
-                      long_run_tonic: 0,
-                      cadence_crystal: 0,
-                      recovery_dew: 0,
-                    });
-                    setCustomTitle('');
-                  }}
+                  onClick={handleResetAll}
                   className="pixel-btn text-[10px] px-2 py-0.5 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen"
                   title="Reset all formula reagents"
                 >
@@ -458,15 +559,28 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
               />
             </div>
 
-            {/* Transmute Action Button */}
-            <button
-              onClick={handleTransmute}
-              disabled={isBrewing || totalItemsCount === 0}
-              className="pixel-btn pixel-btn-amber w-full mt-4 py-3 text-sm flex items-center justify-center gap-2 disabled:opacity-40 font-silkscreen transition-all"
-            >
-              <PixelFlameIcon size={20} color="#0E151B" />
-              <span>{totalItemsCount === 0 ? '⚠️ SELECT REAGENTS TO FORGE' : '🧪 FORGE WORKOUT PLAN NOW!'}</span>
-            </button>
+            {/* Transmute & Reset Action Buttons */}
+            <div className="flex gap-2 mt-4">
+              <button
+                type="button"
+                onClick={handleResetAll}
+                disabled={totalItemsCount === 0 && !customTitle}
+                className="pixel-btn text-xs px-3.5 py-3 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen disabled:opacity-30 whitespace-nowrap flex items-center justify-center gap-1.5 transition-all"
+                title="Reset all reagents in crucible"
+              >
+                <span>🔄</span>
+                <span>RESET</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleTransmute}
+                disabled={isBrewing || totalItemsCount === 0}
+                className="pixel-btn pixel-btn-amber flex-1 py-3 text-xs sm:text-sm flex items-center justify-center gap-2 disabled:opacity-40 font-silkscreen transition-all"
+              >
+                <PixelFlameIcon size={20} color="#0E151B" />
+                <span>{totalItemsCount === 0 ? '⚠️ SELECT REAGENTS TO FORGE' : '🧪 FORGE WORKOUT PLAN NOW!'}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -486,19 +600,7 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  playButtonClickSound();
-                  setQuantities({
-                    easy_dust: 0,
-                    tempo_potion: 0,
-                    interval_elixir: 0,
-                    long_run_tonic: 0,
-                    cadence_crystal: 0,
-                    recovery_dew: 0,
-                  });
-                  setCustomTitle('');
-                  setLatestElixir(null);
-                }}
+                onClick={handleResetAll}
                 className="pixel-btn text-[10px] px-2.5 py-1 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen"
                 title="Reset crucible reagents and close result"
               >
@@ -550,19 +652,7 @@ export const CrucibleCrafting: React.FC<CrucibleCraftingProps> = ({
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2 border-t border-[#2A3A4A]">
             <button
               type="button"
-              onClick={() => {
-                playButtonClickSound();
-                setQuantities({
-                  easy_dust: 0,
-                  tempo_potion: 0,
-                  interval_elixir: 0,
-                  long_run_tonic: 0,
-                  cadence_crystal: 0,
-                  recovery_dew: 0,
-                });
-                setCustomTitle('');
-                setLatestElixir(null);
-              }}
+              onClick={handleResetAll}
               className="pixel-btn text-xs px-3 py-2 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen flex items-center justify-center gap-1.5"
             >
               <span>🔄</span>

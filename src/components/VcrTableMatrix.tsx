@@ -8,6 +8,13 @@ export const VcrTableMatrix: React.FC = () => {
   const [inputValue, setInputValue] = useState<number>(14400); // 14,400 meters for 60min = 4.0 m/s
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const handleResetVcr = () => {
+    playButtonClickSound();
+    setTestType('60min');
+    setInputValue(14400);
+    setSearchQuery('');
+  };
+
   // Find active matched row
   let activeRow: VcrRow;
   if (testType === 'velocity') {
@@ -53,9 +60,19 @@ export const VcrTableMatrix: React.FC = () => {
       <div className="pixel-panel p-5 bg-[#101923]">
         <h3 className="font-silkscreen text-sm text-[#C9973E] mb-4 border-b border-[#2A3A4A] pb-2 flex justify-between items-center">
           <span>🎯 VCr CALCULATOR & PACING INTERPRETER</span>
-          <span className="font-pixel text-xs text-[#38D9C4]">
-            ACTIVE VCr: {activeRow.velocityMs} m/s ({activeRow.timePerKm} /km)
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="font-pixel text-xs text-[#38D9C4]">
+              ACTIVE VCr: {activeRow.velocityMs} m/s ({activeRow.timePerKm} /km)
+            </span>
+            <button
+              type="button"
+              onClick={handleResetVcr}
+              className="pixel-btn text-[10px] px-2 py-0.5 text-[#E2654B] border-[#E2654B]/40 hover:bg-[#E2654B]/20 font-silkscreen"
+              title="Reset VCr test input to default 60min / 14,400m"
+            >
+              RESET
+            </button>
+          </div>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -211,13 +228,25 @@ export const VcrTableMatrix: React.FC = () => {
             <span className="text-xs text-[#8A9EB2]">Click any row to select &amp; highlight corresponding training velocities</span>
           </div>
 
-          <input
-            type="text"
-            placeholder="Search velocity / distance..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pixel-input text-xs w-full sm:w-56"
-          />
+          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+            <input
+              type="text"
+              placeholder="Search velocity / distance..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pixel-input text-xs w-full sm:w-56"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="pixel-btn text-[10px] px-2 py-1.5 text-[#E2654B] font-silkscreen"
+                title="Clear search filter"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Scrollable Table Container */}
