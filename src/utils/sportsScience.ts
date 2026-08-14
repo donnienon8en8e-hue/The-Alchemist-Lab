@@ -200,3 +200,97 @@ export function formatTimeSeconds(totalSec: number): string {
   }
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
+
+export type FeelingLevel = 'Very Light' | 'Light' | 'Moderate' | 'Hard' | 'Max Effort';
+
+export interface FeelingDescriptor {
+  level: FeelingLevel;
+  rpeRange: string;
+  rpeMin: number;
+  rpeMax: number;
+  label: string;
+  badgeBg: string;
+  border: string;
+  textColor: string;
+  color: string;
+  description: string;
+  emoji: string;
+}
+
+export const FEELING_LEVELS: FeelingDescriptor[] = [
+  {
+    level: 'Very Light',
+    rpeRange: '1-2',
+    rpeMin: 1,
+    rpeMax: 2,
+    label: 'VERY LIGHT',
+    badgeBg: 'bg-[#38D9C4]/15',
+    border: 'border-[#38D9C4]',
+    textColor: 'text-[#38D9C4]',
+    color: '#38D9C4',
+    description: 'Zone 1 Active Recovery • Effortless stroll / shakeout',
+    emoji: '🍃',
+  },
+  {
+    level: 'Light',
+    rpeRange: '3-4',
+    rpeMin: 3,
+    rpeMax: 4,
+    label: 'LIGHT',
+    badgeBg: 'bg-[#4ADE80]/15',
+    border: 'border-[#4ADE80]',
+    textColor: 'text-[#4ADE80]',
+    color: '#4ADE80',
+    description: 'Zone 2 Aerobic Base • Conversational, steady cruise',
+    emoji: '🌿',
+  },
+  {
+    level: 'Moderate',
+    rpeRange: '5-6',
+    rpeMin: 5,
+    rpeMax: 6,
+    label: 'MODERATE',
+    badgeBg: 'bg-[#EBBF68]/15',
+    border: 'border-[#EBBF68]',
+    textColor: 'text-[#EBBF68]',
+    color: '#EBBF68',
+    description: 'Zone 3 Tempo • Comfortably hard, rhythmic breathing',
+    emoji: '⚡',
+  },
+  {
+    level: 'Hard',
+    rpeRange: '7-8',
+    rpeMin: 7,
+    rpeMax: 8,
+    label: 'HARD',
+    badgeBg: 'bg-[#E2654B]/15',
+    border: 'border-[#E2654B]',
+    textColor: 'text-[#E2654B]',
+    color: '#E2654B',
+    description: 'Zone 4 Lactate Threshold • Heavy breathing, high focus',
+    emoji: '🔥',
+  },
+  {
+    level: 'Max Effort',
+    rpeRange: '9-10',
+    rpeMin: 9,
+    rpeMax: 10,
+    label: 'MAX EFFORT',
+    badgeBg: 'bg-[#E05688]/15',
+    border: 'border-[#E05688]',
+    textColor: 'text-[#E05688]',
+    color: '#E05688',
+    description: 'Zone 5 VO2 Max / Anaerobic • All-out sprint, absolute exhaustion',
+    emoji: '💥',
+  },
+];
+
+export function getFeelingFromRpe(rpe: number | string | undefined): FeelingDescriptor {
+  const num = typeof rpe === 'number' ? rpe : parseInt(String(rpe), 10) || 7;
+  if (num <= 2) return FEELING_LEVELS[0];
+  if (num <= 4) return FEELING_LEVELS[1];
+  if (num <= 6) return FEELING_LEVELS[2];
+  if (num <= 8) return FEELING_LEVELS[3];
+  return FEELING_LEVELS[4];
+}
+

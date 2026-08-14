@@ -82,6 +82,8 @@ export interface PacingZone {
   color: string;
 }
 
+export type FeelingLevel = 'Very Light' | 'Light' | 'Moderate' | 'Hard' | 'Max Effort';
+
 export interface LoggedWorkout {
   id: string;
   date: string;
@@ -93,6 +95,7 @@ export interface LoggedWorkout {
   avgPace: string;
   avgHr: number;
   rpeMana: number; // 1 to 10
+  feeling?: FeelingLevel;
   potionUsed?: string;
   notes: string;
 }

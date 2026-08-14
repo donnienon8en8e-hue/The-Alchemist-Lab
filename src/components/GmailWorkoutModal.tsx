@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { INITIAL_ATHLETES as athletes } from '../data/initialData';
 import { LoggedWorkout } from '../types';
 import { playButtonClickSound, playTransmutationSuccessSound } from '../utils/audioSynth';
+import { getFeelingFromRpe, FEELING_LEVELS } from '../utils/sportsScience';
 import {
   ParsedGmailWorkout,
   fetchGmailWorkouts,
@@ -439,23 +440,64 @@ export const GmailWorkoutModal: React.FC<GmailWorkoutModalProps> = ({
 
                               <div className="bg-[#0B1015] p-1.5 border border-[#1E2D3B]">
                                 <span className="text-[9px] text-[#8A9EB2] block font-silkscreen">
-                                  MANA RPE (1-10)
+                                  FEELING (1-10)
                                 </span>
-                                <input
-                                  type="number"
-                                  min="1"
-                                  max="10"
-                                  value={w.rpeMana}
-                                  onChange={(e) =>
-                                    handleUpdateWorkoutField(
-                                      w.id,
-                                      'rpeMana',
-                                      parseInt(e.target.value, 10) || 7
-                                    )
-                                  }
-                                  className="w-full bg-transparent text-[#C9973E] font-bold outline-none"
-                                />
+                                {(() => {
+                                  const feel = getFeelingFromRpe(w.rpeMana);
+                                  return (
+                                    <div className="flex items-center gap-1">
+                                      <input
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        value={w.rpeMana}
+                                        onChange={(e) =>
+                                          handleUpdateWorkoutField(
+                                            w.id,
+                                            'rpeMana',
+                                            parseInt(e.target.value, 10) || 7
+                                          )
+                                        }
+                                        className="w-10 bg-transparent font-bold outline-none text-center"
+                                        style={{ color: feel.color }}
+                                      />
+                                      <span
+                                        className={`text-[9px] font-silkscreen px-1 py-0.5 border truncate ${feel.badgeBg} ${feel.border} ${feel.textColor}`}
+                                        title={feel.description}
+                                      >
+                                        {feel.emoji} {feel.level}
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
                               </div>
+                            </div>
+
+                            {/* Feeling Quick Toggle Pills */}
+                            <div className="flex flex-wrap gap-1 pt-1">
+                              {FEELING_LEVELS.map((fl) => {
+                                const isCurrent = getFeelingFromRpe(w.rpeMana).level === fl.level;
+                                return (
+                                  <button
+                                    key={fl.level}
+                                    type="button"
+                                    onClick={() =>
+                                      handleUpdateWorkoutField(
+                                        w.id,
+                                        'rpeMana',
+                                        fl.rpeMax === 10 ? 10 : fl.rpeMax
+                                      )
+                                    }
+                                    className={`px-1.5 py-0.5 text-[8px] font-silkscreen border transition-all ${
+                                      isCurrent
+                                        ? `${fl.badgeBg} ${fl.border} ${fl.textColor} font-bold`
+                                        : 'bg-[#0B1015] border-[#1E2D3B] text-[#6A7E90] hover:text-[#A0B0C0]'
+                                    }`}
+                                  >
+                                    {fl.emoji} {fl.level}
+                                  </button>
+                                );
+                              })}
                             </div>
 
                             {/* Email snippet preview */}

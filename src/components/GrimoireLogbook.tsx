@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Athlete, BrewedWorkout, LoggedWorkout } from '../types';
+import { Athlete, BrewedWorkout, LoggedWorkout, FeelingLevel } from '../types';
 import { PixelScrollIcon, PixelPlusIcon, PixelFlameIcon } from './PixelIcons';
 import { playButtonClickSound } from '../utils/audioSynth';
 import { GmailWorkoutModal } from './GmailWorkoutModal';
+import { FEELING_LEVELS, getFeelingFromRpe } from '../utils/sportsScience';
 
 interface GrimoireLogbookProps {
   athletes: Athlete[];
@@ -31,6 +32,7 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
   const [showLogModal, setShowLogModal] = useState(false);
   const [showGmailModal, setShowGmailModal] = useState(false);
   const [filterAthleteId, setFilterAthleteId] = useState<string>('all');
+  const [filterFeeling, setFilterFeeling] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Default Form values
@@ -68,6 +70,7 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
   const handleResetCodexFilters = () => {
     playButtonClickSound();
     setFilterAthleteId('all');
+    setFilterFeeling('all');
     setSearchQuery('');
   };
 
@@ -77,6 +80,7 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
       onResetLogbook();
     }
     setFilterAthleteId('all');
+    setFilterFeeling('all');
     setSearchQuery('');
   };
 
@@ -101,6 +105,9 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
     const selectedAthlete = athletes.find((a) => a.id === athleteId);
     if (!selectedAthlete) return;
 
+    const rpeNum = parseInt(rpeMana, 10) || 5;
+    const feelingDesc = getFeelingFromRpe(rpeNum);
+
     const newLog: LoggedWorkout = {
       id: `log_${Date.now()}`,
       date: new Date().toISOString().split('T')[0],
@@ -111,7 +118,8 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
       timeMinutes: parseFloat(timeMins) || 0,
       avgPace: avgPace.trim() || '--:-- /km',
       avgHr: parseInt(avgHr, 10) || 150,
-      rpeMana: parseInt(rpeMana, 10) || 5,
+      rpeMana: rpeNum,
+      feeling: feelingDesc.level,
       notes: notes.trim(),
     };
 
@@ -124,12 +132,15 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
 
   const filteredLogged = loggedWorkouts.filter((l) => {
     const matchesAthlete = filterAthleteId === 'all' || l.athleteId === filterAthleteId;
+    const feel = getFeelingFromRpe(l.rpeMana);
+    const matchesFeeling = filterFeeling === 'all' || (l.feeling || feel.level) === filterFeeling;
     const matchesQuery =
       !q ||
       l.workoutTitle.toLowerCase().includes(q) ||
       l.athleteName.toLowerCase().includes(q) ||
+      feel.level.toLowerCase().includes(q) ||
       (l.notes && l.notes.toLowerCase().includes(q));
-    return matchesAthlete && matchesQuery;
+    return matchesAthlete && matchesFeeling && matchesQuery;
   });
 
   const filteredBrewed = brewedWorkouts.filter((b) => {
@@ -210,6 +221,36 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
                 }}
                 className="pixel-btn text-[10px] px-2 py-1.5 text-[#E2654B] font-silkscreen"
                 title="Reset to all athletes"
+              >
+                RESET
+              </button>
+            )}
+          </div>
+
+          {/* Feeling Level Filter */}
+          <div className="flex items-center gap-1">
+            <select
+              value={filterFeeling}
+              onChange={(e) => setFilterFeeling(e.target.value)}
+              className="pixel-input text-xs text-[#EBBF68]"
+            >
+              <option value="all">ALL FEELINGS</option>
+              {FEELING_LEVELS.map((f) => (
+                <option key={f.level} value={f.level}>
+                  {f.emoji} {f.level} ({f.rpeRange})
+                </option>
+              ))}
+            </select>
+
+            {filterFeeling !== 'all' && (
+              <button
+                type="button"
+                onClick={() => {
+                  playButtonClickSound();
+                  setFilterFeeling('all');
+                }}
+                className="pixel-btn text-[10px] px-2 py-1.5 text-[#E2654B] font-silkscreen"
+                title="Reset feeling filter"
               >
                 RESET
               </button>
@@ -371,9 +412,19 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
                     <span className="bg-[#0B1015] px-2 py-1 border border-[#1E2D3B] text-[#EBBF68] font-bold">
                       {log.avgPace}
                     </span>
-                    <span className="bg-[#0B1015] px-2 py-1 border border-[#1E2D3B] text-[#E2654B] font-bold">
-                      MANA {log.rpeMana}/10
-                    </span>
+                    {(() => {
+                      const feel = getFeelingFromRpe(log.rpeMana);
+                      return (
+                        <span
+                          className={`px-2 py-1 border font-bold flex items-center gap-1 font-silkscreen text-[10px] ${feel.badgeBg} ${feel.border} ${feel.textColor}`}
+                          title={`Feeling: ${feel.level} (RPE ${log.rpeMana}/10) - ${feel.description}`}
+                        >
+                          <span>{feel.emoji}</span>
+                          <span>{feel.label}</span>
+                          <span className="opacity-75 text-[9px] font-mono">[{log.rpeMana}/10]</span>
+                        </span>
+                      );
+                    })()}
                     {onDeleteLoggedWorkout && (
                       <button
                         type="button"
@@ -569,6 +620,47 @@ export const GrimoireLogbook: React.FC<GrimoireLogbookProps> = ({
                     onChange={(e) => setTimeMins(e.target.value)}
                     className="pixel-input w-full"
                   />
+                </div>
+              </div>
+
+              {/* Feeling / Effort Selector */}
+              <div>
+                <div className="flex justify-between items-center mb-1.5">
+                  <label className="text-[#8A9EB2]">FEELING / EFFORT LEVEL:</label>
+                  {(() => {
+                    const curFeel = getFeelingFromRpe(rpeMana);
+                    return (
+                      <span className={`text-[11px] font-silkscreen font-bold ${curFeel.textColor}`}>
+                        {curFeel.emoji} {curFeel.level} (RPE {rpeMana}/10)
+                      </span>
+                    );
+                  })()}
+                </div>
+
+                <div className="grid grid-cols-5 gap-1.5 mb-2">
+                  {FEELING_LEVELS.map((f) => {
+                    const isSelected = getFeelingFromRpe(rpeMana).level === f.level;
+                    return (
+                      <button
+                        key={f.level}
+                        type="button"
+                        onClick={() => {
+                          playButtonClickSound();
+                          setRpeMana(String(f.rpeMin + Math.floor((f.rpeMax - f.rpeMin) / 2)));
+                        }}
+                        className={`p-1.5 border text-center transition-all flex flex-col items-center justify-center ${
+                          isSelected
+                            ? `${f.badgeBg} ${f.border} ${f.textColor} font-bold ring-1 ring-offset-1 ring-offset-[#0B1015] ${f.border}`
+                            : 'bg-[#0B1015] border-[#1E2D3B] text-[#8A9EB2] hover:border-[#38D9C4]/40 hover:text-[#E0E8F0]'
+                        }`}
+                        title={f.description}
+                      >
+                        <span className="text-base">{f.emoji}</span>
+                        <span className="font-silkscreen text-[9px] leading-tight mt-0.5">{f.level}</span>
+                        <span className="text-[8px] opacity-75 font-mono">({f.rpeRange})</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
