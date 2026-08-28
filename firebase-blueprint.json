@@ -29,6 +29,22 @@
       },
       "required": ["name", "level", "exp", "vdot"]
     },
+    "athleteTests": {
+      "title": "Athlete Tests",
+      "description": "Sports science test results recorded for an athlete",
+      "properties": {
+        "id": { "type": "string" },
+        "testId": { "type": "string" },
+        "testType": { "type": "string" },
+        "testName": { "type": "string" },
+        "testedAt": { "type": "string" },
+        "metrics": { "type": "object" },
+        "vdotResult": { "type": "number" },
+        "acwrResult": { "type": "number" },
+        "notes": { "type": "string" }
+      },
+      "required": ["testName", "testedAt"]
+    },
     "loggedWorkouts": {
       "title": "Logged Workouts",
       "description": "Training runs logged by athletes",
@@ -43,10 +59,25 @@
         "avgPace": { "type": "string" },
         "avgHr": { "type": "number" },
         "rpeMana": { "type": "number" },
+        "feeling": { "type": "string" },
         "potionUsed": { "type": "string" },
         "notes": { "type": "string" }
       },
       "required": ["date", "athleteId", "workoutTitle", "distanceKm"]
+    }
+  },
+  "firestore": {
+    "/athletes/{athleteId}": {
+      "schema": "#/entities/athletes",
+      "description": "Profile data for athletes"
+    },
+    "/athletes/{athleteId}/tests/{testId}": {
+      "schema": "#/entities/athleteTests",
+      "description": "Subcollection of sports science test assessments for an athlete"
+    },
+    "/loggedWorkouts/{workoutId}": {
+      "schema": "#/entities/loggedWorkouts",
+      "description": "Collection of all logged workouts"
     }
   }
 }

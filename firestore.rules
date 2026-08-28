@@ -1,8 +1,29 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isCoach(userId) {
+      return isSignedIn() && (
+        request.auth.token.get('coach', false) == true ||
+        (exists(/databases/$(database)/documents/athletes/$(userId)) &&
+         get(/databases/$(database)/documents/athletes/$(userId)).data.get('role', '') == 'coach')
+      );
+    }
+
+    match /athletes/{athleteId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == athleteId;
+    }
+
+    match /athletes/{athleteId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == athleteId || isCoach(request.auth.uid));
+    }
+
+    match /loggedWorkouts/{workoutId} {
+      allow read, write: if isSignedIn();
     }
   }
 }
+

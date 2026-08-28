@@ -84,6 +84,19 @@ export interface PacingZone {
 
 export type FeelingLevel = 'Very Light' | 'Light' | 'Moderate' | 'Hard' | 'Max Effort';
 
+export interface AthleteTest {
+  id: string;
+  testId?: string;
+  testType: 'vdot' | 'acwr' | 'karvonen' | 'riegel' | 'lactate' | 'custom';
+  testName: string;
+  testedAt: string;
+  metrics: Record<string, any>;
+  vdotResult?: number;
+  acwrResult?: number;
+  notes?: string;
+  createdAt?: string;
+}
+
 export interface LoggedWorkout {
   id: string;
   date: string;

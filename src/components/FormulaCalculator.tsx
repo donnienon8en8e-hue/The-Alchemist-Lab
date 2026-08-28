@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { calculateVDOT, getPacingZonesFromVDOT, predictRaceTime, formatTimeSeconds, calculateACWR } from '../utils/sportsScience';
 import { VcrTableMatrix } from './VcrTableMatrix';
-import { playButtonClickSound } from '../utils/audioSynth';
-import { PixelBarChartIcon, PixelCompassIcon, PixelFlameIcon } from './PixelIcons';
+import { playButtonClickSound, playTransmutationSuccessSound } from '../utils/audioSynth';
+import { PixelBarChartIcon, PixelCompassIcon, PixelFlameIcon, PixelPlusIcon } from './PixelIcons';
+import { useAuth } from '../context/AuthContext';
 
 export const FormulaCalculator: React.FC = () => {
-  const [activeSubTab, setActiveSubTab] = useState<'vcr' | 'vdot'>('vcr');
+  const { user, saveTest, athleteTests, athleteProfile } = useAuth();
+  const [activeSubTab, setActiveSubTab] = useState<'vcr' | 'vdot'>('vdot');
+  const [savingTest, setSavingTest] = useState(false);
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
 
   // Calculator 1: VDOT & Pacing Transmuter Defaults
   const DEFAULT_RACE_DIST = 5000;
@@ -44,6 +48,83 @@ export const FormulaCalculator: React.FC = () => {
   const [maxHr, setMaxHr] = useState(DEFAULT_MAX_HR);
   const [restingHr, setRestingHr] = useState(DEFAULT_RESTING_HR);
   const hrr = maxHr - restingHr;
+
+  // Handle Save VDOT Test
+  const handleSaveVdotTest = async () => {
+    if (!user) {
+      alert('Please connect / log in with Google to save tests to your Cloud Athlete profile.');
+      return;
+    }
+    try {
+      setSavingTest(true);
+      playButtonClickSound();
+      const testId = `vdot_${Date.now()}`;
+      const testData = {
+        id: testId,
+        testId,
+        testType: 'vdot' as const,
+        testName: `VDOT Benchmark (${raceDistMeters >= 1000 ? `${raceDistMeters / 1000}K` : `${raceDistMeters}m`})`,
+        testedAt: new Date().toISOString(),
+        vdotResult: calculatedVdot,
+        metrics: {
+          raceDistMeters,
+          timeSeconds: totalRaceSeconds,
+          timeFormatted: `${hours > 0 ? `${hours}h ` : ''}${minutes}m ${seconds}s`,
+          thresholdPace: pacingZones.find((z) => z.zone.includes('Zone 4'))?.paceRange || '',
+          vo2MaxPace: pacingZones.find((z) => z.zone.includes('Zone 5'))?.paceRange || '',
+        },
+      };
+
+      // บันทึกผลทดสอบ: await setDoc(doc(db, "athletes", user.uid, "tests", testId), testData);
+      await saveTest(testId, testData);
+      playTransmutationSuccessSound();
+      setSaveSuccessMsg(`Test saved to athletes/${user.uid}/tests/${testId}!`);
+      setTimeout(() => setSaveSuccessMsg(null), 4000);
+    } catch (e: any) {
+      console.error('Failed to save test:', e);
+      alert(`Error saving test to Firestore: ${e.message}`);
+    } finally {
+      setSavingTest(false);
+    }
+  };
+
+  // Handle Save ACWR Test
+  const handleSaveAcwrTest = async () => {
+    if (!user) {
+      alert('Please connect / log in with Google to save tests to your Cloud Athlete profile.');
+      return;
+    }
+    try {
+      setSavingTest(true);
+      playButtonClickSound();
+      const testId = `acwr_${Date.now()}`;
+      const testData = {
+        id: testId,
+        testId,
+        testType: 'acwr' as const,
+        testName: `ACWR Workload Ratio Assessment`,
+        testedAt: new Date().toISOString(),
+        acwrResult: acwrResult.ratio,
+        metrics: {
+          acute7dKm: acute7d,
+          chronic28dKm: chronic28d,
+          status: acwrResult.status,
+          risk: acwrResult.description,
+        },
+      };
+
+      // บันทึกผลทดสอบ: await setDoc(doc(db, "athletes", user.uid, "tests", testId), testData);
+      await saveTest(testId, testData);
+      playTransmutationSuccessSound();
+      setSaveSuccessMsg(`ACWR Assessment saved to athletes/${user.uid}/tests/${testId}!`);
+      setTimeout(() => setSaveSuccessMsg(null), 4000);
+    } catch (e: any) {
+      console.error('Failed to save ACWR test:', e);
+      alert(`Error saving test: ${e.message}`);
+    } finally {
+      setSavingTest(false);
+    }
+  };
 
   // Reset Handlers
   const resetVdotCalculator = () => {
@@ -221,7 +302,19 @@ export const FormulaCalculator: React.FC = () => {
               </div>
 
               {/* Calculated Pacing Table */}
-              <h4 className="font-silkscreen text-xs text-[#38D9C4] mb-2">⏱️ CALCULATED PACING MATRIX</h4>
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="font-silkscreen text-xs text-[#38D9C4]">⏱️ CALCULATED PACING MATRIX</h4>
+                <button
+                  type="button"
+                  disabled={savingTest}
+                  onClick={handleSaveVdotTest}
+                  className="pixel-btn text-xs px-3 py-1.5 pixel-btn-teal font-silkscreen flex items-center gap-1.5 shadow-md"
+                  title="Save VDOT test results to Firestore: athletes/{uid}/tests/{testId}"
+                >
+                  <PixelPlusIcon size={14} />
+                  <span>{savingTest ? 'SAVING...' : 'SAVE TEST TO FIRESTORE'}</span>
+                </button>
+              </div>
               <div className="space-y-2 font-tech text-xs">
                 {pacingZones.map((pz, idx) => (
                   <div key={idx} className="bg-[#0B1015] p-2.5 border border-[#1E2D3B] flex justify-between items-center">
@@ -306,9 +399,19 @@ export const FormulaCalculator: React.FC = () => {
                 </div>
 
                 <div className="p-3 bg-[#0B1015] border-2 border-[#1E2D3B] mt-3">
-                  <span className="font-silkscreen text-xs block mb-1" style={{ color: acwrResult.color }}>
-                    STATUS: {acwrResult.status}
-                  </span>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-silkscreen text-xs" style={{ color: acwrResult.color }}>
+                      STATUS: {acwrResult.status}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={savingTest}
+                      onClick={handleSaveAcwrTest}
+                      className="pixel-btn text-[10px] px-2 py-1 text-[#EBBF68] font-silkscreen border-[#EBBF68]/40"
+                    >
+                      SAVE ACWR
+                    </button>
+                  </div>
                   <p className="text-[11px] text-[#A0B0C0] italic">{acwrResult.description}</p>
                 </div>
               </div>
@@ -358,6 +461,58 @@ export const FormulaCalculator: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Cloud Firestore Test Assessments Log */}
+            <div className="pixel-panel p-5">
+              <h3 className="font-silkscreen text-sm text-[#38D9C4] mb-3 border-b border-[#2A3A4A] pb-2 flex justify-between items-center">
+                <span>🧪 ATHLETE TEST HISTORY (FIRESTORE)</span>
+                <span className="text-[10px] text-[#8A9EB2] font-mono">
+                  {athleteTests.length} SAVED
+                </span>
+              </h3>
+
+              {saveSuccessMsg && (
+                <div className="p-2 bg-[#38D9C4]/15 border border-[#38D9C4] text-[#38D9C4] text-xs font-silkscreen mb-3 animate-pulse">
+                  ✓ {saveSuccessMsg}
+                </div>
+              )}
+
+              {athleteTests.length === 0 ? (
+                <p className="text-xs text-[#8A9EB2] italic">
+                  {user
+                    ? 'No tests saved yet in athletes/' + user.uid + '/tests. Click "SAVE TEST TO FIRESTORE" above to record one!'
+                    : 'Connect / Log in with Google to view and sync your personal athlete test history.'}
+                </p>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                  {athleteTests.map((t) => (
+                    <div
+                      key={t.id}
+                      className="bg-[#0B1015] p-2.5 border border-[#1E2D3B] flex justify-between items-center text-xs"
+                    >
+                      <div>
+                        <span className="text-[#E0E8F0] font-bold block">{t.testName}</span>
+                        <span className="text-[10px] text-[#8A9EB2] font-mono">
+                          {t.testedAt ? new Date(t.testedAt).toLocaleDateString() : ''} • ID: {t.id}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        {t.vdotResult && (
+                          <span className="text-xs font-silkscreen text-[#38D9C4] block">
+                            VDOT: {t.vdotResult}
+                          </span>
+                        )}
+                        {t.acwrResult && (
+                          <span className="text-xs font-silkscreen text-[#EBBF68] block">
+                            ACWR: {t.acwrResult}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
